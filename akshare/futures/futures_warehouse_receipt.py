@@ -102,9 +102,9 @@ def futures_shfe_warehouse_receipt(trade_date: str = "20200702") -> dict:
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36"
     }
-    url = f"http://www.shfe.com.cn/data/dailydata/{trade_date}dailystock.dat"
+    url = f"https://www.shfe.com.cn/data/dailydata/{trade_date}dailystock.dat"
     if trade_date >= "20140519":
-        r = requests.get(url, headers=headers)
+        r = requests.get(url, headers=headers, verify=False)
         data_json = r.json()
         temp_df = pd.DataFrame(data_json["o_cursor"])
         temp_df["VARNAME"] = (
@@ -120,8 +120,8 @@ def futures_shfe_warehouse_receipt(trade_date: str = "20200702") -> dict:
         for item in set(temp_df["VARNAME"]):
             big_dict[item] = temp_df[temp_df["VARNAME"] == item]
     else:
-        url = f"http://www.shfe.com.cn/data/dailydata/{trade_date}dailystock.html"
-        r = requests.get(url, headers=headers)
+        url = f"https://www.shfe.com.cn/data/dailydata/{trade_date}dailystock.html"
+        r = requests.get(url, headers=headers, verify=False)
         temp_df = pd.read_html(r.text)[0]
         index_list = temp_df[
             temp_df.iloc[:, 3].str.contains("单位：") == 1
@@ -159,5 +159,10 @@ if __name__ == "__main__":
 
     futures_shfe_warehouse_receipt_df = futures_shfe_warehouse_receipt(
         trade_date="20200702"
+    )
+    print(futures_shfe_warehouse_receipt_df)
+
+    futures_shfe_warehouse_receipt_df = futures_shfe_warehouse_receipt(
+        trade_date="20140516"
     )
     print(futures_shfe_warehouse_receipt_df)
